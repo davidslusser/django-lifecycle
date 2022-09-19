@@ -50,33 +50,33 @@ class LifecycleResult(ReferenceTable):
 
 
 class Lifecycle(models.Model):
-    """ individual instance of a lifecycle entry """
+    """ individual instance of a model_lifecycle entry """
     is_complete = models.BooleanField(default=False, help_text='set to true when all stages are complete')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def get_stages(self) -> models.query.QuerySet:
-        """ get all the stages of this lifecycle """
+        """ get all the stages of this model_lifecycle """
         return self.lifecyclestage_set.all()
 
     def get_completion_percentage(self) -> float:
-        """ get the current completion, as a percentage, of this lifecycle """
+        """ get the current completion, as a percentage, of this model_lifecycle """
         return self.lifecyclestage_set.filter(state__name='completed').count() / self.lifecyclestage_set.count()
 
     def get_current_stage(self):
-        """ get the current stage of this lifecycle """
+        """ get the current stage of this model_lifecycle """
         pass
 
     def get_completed_stages(self) -> models.query.QuerySet:
-        """ get completed stages of this lifecycle """
+        """ get completed stages of this model_lifecycle """
         return self.lifecyclestage_set.filter(state__name='completed')
 
     def get_remaining_stages(self) -> models.query.QuerySet:
-        """ get remaining (non-completed) stages of this lifecycle """
+        """ get remaining (non-completed) stages of this model_lifecycle """
         return self.lifecyclestage_set.exclude(state__name='completed')
 
     def add_stage(self, name: str, description: str = None, blocking: bool = None):
-        """ add a stage to this lifecycle
+        """ add a stage to this model_lifecycle
         Parameters:
             name        - (str) name of this stage
             description - (str) description of this stage
@@ -102,16 +102,16 @@ class Lifecycle(models.Model):
 
 
 class LifecycleStage(models.Model):
-    """ individual stage(s) for a lifecycle item; identifies where in the overall lifecycle a thing is; includes a
+    """ individual stage(s) for a model_lifecycle item; identifies where in the overall model_lifecycle a thing is; includes a
     state and a result """
-    lifecycle = models.ForeignKey(Lifecycle, on_delete=models.CASCADE, help_text='lifecycle this stage belongs to')
+    lifecycle = models.ForeignKey(Lifecycle, on_delete=models.CASCADE, help_text='model_lifecycle this stage belongs to')
     name = models.CharField(max_length=64, unique=True, help_text='short reference for stage')
     description = models.CharField(max_length=255, blank=True, null=True, help_text='detailed description of stage')
     order = models.IntegerField(help_text='operational order of stage (where 1 is the first)')
     state = models.ForeignKey(LifecycleState, default=get_default_lifecycle_state, on_delete=models.CASCADE,
-                              help_text='current activity of lifecycle stage')
+                              help_text='current activity of model_lifecycle stage')
     result = models.ForeignKey(LifecycleResult, default=get_default_lifecycle_result, on_delete=models.CASCADE,
-                               help_text='outcome of lifecycle stage')
+                               help_text='outcome of model_lifecycle stage')
     details = models.CharField(max_length=255, blank=True, null=True,
                                help_text='additional details, such as incomplete reason')
     blocking = models.BooleanField(default=True,
@@ -137,10 +137,10 @@ class LifecycleStage(models.Model):
 
 
 class LifecycleField(models.ForeignKey):
-    description = 'A field to track the lifecycle of a given object entry'
+    description = 'A field to track the model_lifecycle of a given object entry'
 
     def __init__(self, **kwargs):
-        kwargs['to'] = 'lifecycle.Lifecycle'
+        kwargs['to'] = 'model_lifecycle.Lifecycle'
         kwargs['blank'] = True
         kwargs['null'] = True
         kwargs['on_delete'] = models.CASCADE

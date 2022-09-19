@@ -61,9 +61,9 @@ class Migration(migrations.Migration):
                 ('blocking', models.BooleanField(default=True, help_text='if True, do not continue to next stage if a failure or error occurs')),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),
-                ('lifecycle', models.ForeignKey(help_text='lifecycle this stage belongs to', on_delete=django.db.models.deletion.CASCADE, to='lifecycle.lifecycle')),
-                ('result', models.ForeignKey(default=lifecycle.models.get_default_lifecycle_result, help_text='outcome of lifecycle stage', on_delete=django.db.models.deletion.CASCADE, to='lifecycle.lifecycleresult')),
-                ('state', models.ForeignKey(default=lifecycle.models.get_default_lifecycle_state, help_text='current activity of lifecycle stage', on_delete=django.db.models.deletion.CASCADE, to='lifecycle.lifecyclestate')),
+                ('model_lifecycle', models.ForeignKey(help_text='model_lifecycle this stage belongs to', on_delete=django.db.models.deletion.CASCADE, to='model_lifecycle.model_lifecycle')),
+                ('result', models.ForeignKey(default=lifecycle.models.get_default_lifecycle_result, help_text='outcome of model_lifecycle stage', on_delete=django.db.models.deletion.CASCADE, to='model_lifecycle.lifecycleresult')),
+                ('state', models.ForeignKey(default=lifecycle.models.get_default_lifecycle_state, help_text='current activity of model_lifecycle stage', on_delete=django.db.models.deletion.CASCADE, to='model_lifecycle.lifecyclestate')),
             ],
             options={
                 'ordering': ['order'],

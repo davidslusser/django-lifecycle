@@ -26,7 +26,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'lifecycle',
+    'model_lifecycle',
 ]
 
 MIDDLEWARE = [
@@ -62,7 +62,7 @@ TEMPLATES = [
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'lifecycle.sqlite3',
+        'NAME': 'model_lifecycle.sqlite3',
     },
 }
 
