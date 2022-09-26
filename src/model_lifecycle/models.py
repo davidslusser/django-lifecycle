@@ -65,7 +65,11 @@ class Lifecycle(models.Model):
 
     def get_current_stage(self):
         """ get the current stage of this model_lifecycle """
-        pass
+        completed_stages = self.lifecyclestage_set.filter(state__name='started')
+        if completed_stages:
+            return completed_stages.last()
+        else:
+            return self.lifecyclestage_set.filter(state__name='pending').last()
 
     def get_completed_stages(self) -> models.query.QuerySet:
         """ get completed stages of this model_lifecycle """
@@ -91,10 +95,19 @@ class Lifecycle(models.Model):
 
     def add_stages(self, stage_list: list):
         """ add all the stages passed as a list of dictionaries such as:
-        [{'name': ''},
+        [{'name': 'mystage',
+          'description': 'a very good description of this stage',
+          'blocking': True
+         },
+         ...
         ]
         """
-        pass
+        for stage_data in stage_list:
+            try:
+                stage_data['lifecycle'] = self
+                LifecycleStage.objects.create(**stage_data)
+            except:
+                pass
 
     @property
     def stages(self):
@@ -113,7 +126,7 @@ class LifecycleStage(models.Model):
     result = models.ForeignKey(LifecycleResult, default=get_default_lifecycle_result, on_delete=models.CASCADE,
                                help_text='outcome of model_lifecycle stage')
     details = models.CharField(max_length=255, blank=True, null=True,
-                               help_text='additional details, such as incomplete reason')
+                               help_text='additional details, such as incomplete or error reason')
     blocking = models.BooleanField(default=True,
                                    help_text='if True, do not continue to next stage if a failure or error occurs')
     created_at = models.DateTimeField(auto_now_add=True)
@@ -134,6 +147,37 @@ class LifecycleStage(models.Model):
             stage_count = self.lifecycle.lifecyclestage_set.count()
             self.order = stage_count + 1
         super(LifecycleStage, self).save(*args, **kwargs)
+
+    def set_started(self):
+        """ set the state of this stage to 'started' (result remains 'unknown') """
+        self.state = LifecycleState.objects.get_or_create(name='started')[0]
+        self.save()
+
+    def set_success(self):
+        """ set the state of this stage to 'completed' with a result of 'success' """
+        self.state = LifecycleState.objects.get_or_create(name='completed')[0]
+        self.result = LifecycleResult.objects.get_or_create(name='success')[0]
+        self.save()
+
+    def set_fail(self):
+        """ set the state of this stage to 'completed' with a result of 'failed' """
+        self.state = LifecycleState.objects.get_or_create(name='completed')[0]
+        self.result = LifecycleResult.objects.get_or_create(name='failed')[0]
+        self.save()
+
+    def set_error(self):
+        """ set the result of this stage to 'error', do not update state """
+        self.result = LifecycleResult.objects.get_or_create(name='error')[0]
+        self.save()
+
+    def set_result(self, result_name, allow_additional=False):
+        """ set state to 'completed' with the provided result """
+        self.state = LifecycleState.objects.get_or_create(name='completed')[0]
+        if allow_additional:
+            self.result = LifecycleResult.objects.get_or_create(name=result_name)[0]
+        elif result_name in ['success', 'fail', 'error', 'unknown']:
+            self.result = LifecycleResult.objects.get(name=result_name)
+        self.save()
 
 
 class LifecycleField(models.ForeignKey):

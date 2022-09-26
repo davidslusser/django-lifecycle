@@ -1,0 +1,36 @@
+.timeline-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 1rem 1rem 1rem 1rem;
+    padding: 0rem 1rem 1rem 1rem;
+    border-top: .25rem solid var(--gray);
+ }
+
+ .timeline-item {
+  text-align: center;
+  margin: 0rem 1rem 1rem 1rem;
+}
+
+.timeline-item-icon{
+    font-size: 2.5rem;
+    margin: .5rem;
+}
+
+.timeline-item-title{
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.timeline-item-text{
+    font-size: .75rem;
+    padding-left: .5rem;
+    padding-right: .5rem;
+}
+
+.timeline-item:before {
+  content: "";
+  height: 1rem;
+  border-right: .25rem dashed var(--gray);
+  top: 0;
+}

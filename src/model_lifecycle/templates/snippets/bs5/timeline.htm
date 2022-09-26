@@ -1,0 +1,26 @@
+{% load static %}
+<link href="{% static 'model_lifecycle/snippets/bs5/timeline.css' %}" rel="stylesheet">
+
+<div class="timeline-container align-middle">
+{% for stage in object.stage_set.all %}
+    <div class="timeline-item {% if stage.result.name == 'success' %}text-primary{% elif stage.result.name == 'fail' %}text-danger{% elif stage.result.name == 'error' %}text-danger{% else %}text-info{% endif %}">
+        <div class="d-block hvr-grow">
+            <div class="timeline-item-icon">
+                {% if stage.result.name == 'success' %}
+                <i class="fas fa-check-circle"></i>
+                {% elif stage.result.name == 'fail' %}
+                <i class="fas fa-times-circle"></i>
+                {% elif stage.result.name == 'error' %}
+                <i class="fas fa-exclamation-circle"></i>
+                {% else %}
+                <i class="fa-sharp fa-solid fa-circle-dot"></i>
+                {% endif %}
+            </div>
+            <div class="px-4">
+                <h5 class="timeline-item-title">{{ stage.name }}</h5>
+                <p class="timeline-item-text">{{ stage.description }}</p>
+            </div>
+        </div>
+    </div>
+{% endfor %}
+</div>
